@@ -1,2 +1,0 @@
-# MultithreadedChatServer
-MultithreadedChatServer demo project 
