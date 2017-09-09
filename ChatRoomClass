@@ -1,0 +1,117 @@
+import java.io.*;
+import java.util.*;
+
+public class ChatRoom {
+
+	String name;
+	String creator;
+	List<String> currentUsers;
+
+	String filePath;
+	File chronologyFile;
+
+	int whoIsOnline;
+	int port;
+
+	public ChatRoom(String name, String creator, int port) {
+		this.name = name;
+		this.creator = creator;
+		this.port = port;
+
+		filePath = "chronologyFile " + port + "/" + name + ".txt";
+		whoIsOnline = 1;
+
+		currentUsers = new ArrayList<String>();
+		currentUsers.add(creator);
+
+		chronologyFile = new File(filePath);
+
+		try {
+			chronologyFile.delete();
+			boolean isCreated = chronologyFile.createNewFile();
+			if (isCreated) {
+				System.out.println("Chronology file created.");
+			} else {
+				System.out.println("Chronology file exists.");
+			}
+
+		} catch (IOException e) {
+
+			System.out.println("Error in creating chatroom " + name + "'s chronology file.");
+		}
+	}
+
+	public void addUsersMethod(String username) {
+		currentUsers.add(username);
+		whoIsOnline++;
+	}
+
+	public void removeUsersMethod(String username) {
+		for (int i = 0; i < currentUsers.size(); i++)
+			if (currentUsers.get(i).equals(username)) {
+				currentUsers.remove(i);
+				whoIsOnline--;
+				break;
+			}
+	}
+
+	public int onlineCountMethod() {
+		return whoIsOnline;
+	}
+
+	public StringBuffer getOnlineUsers() {
+		StringBuffer usersList = new StringBuffer();
+		for (int i = 0; i < currentUsers.size(); i++)
+			usersList.append(currentUsers.get(i) + "\n");
+
+		return usersList;
+	}
+
+	@Override
+	public String toString() {
+		return "Name: " + name + ". Users online: " + whoIsOnline + "\n";
+	}
+
+	public void writeToCh(String message) {
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
+
+			bw.write(message + "\n");
+			bw.flush();
+
+			if (bw != null) {
+				bw.close();
+
+			}
+
+		} catch (IOException e) {
+
+			System.out.println("Error in writing to chatroom " + name + " chronology file ");
+		}
+
+	}
+
+	public String readFromCh() {
+		String chronology = "";
+		String currentLine;
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filePath));
+
+			while ((currentLine = br.readLine()) != null) {
+
+				chronology += currentLine + System.getProperty("line.separator");
+			}
+
+			if (br != null) {
+				br.close();
+
+			}
+
+		} catch (IOException e) {
+			System.out.println("Error in reading chatroom " + name + " chronology.");
+		}
+		return chronology;
+
+	}
+}
